@@ -26,7 +26,7 @@ public class LedManager {
 
     private ColorLookUpTable test = new ColorLookUpTable(8);
     private ColorLookUpTable test2 = new ColorLookUpTable(8);
-    private LEDstrip UnderBodyLED = new LEDstrip(9, 60);
+    private LEDstrip UnderBodyLED = new LEDstrip(0, 60);
 
     ControllerManager cManager;
 

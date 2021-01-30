@@ -43,9 +43,9 @@ public class Vision {
         kd = visionTable.getEntry("kd");
         // attempt to grab existing values from network tables otherwise use default of
         // 0
-        kp.setDouble(kp.getDouble(0));
-        ki.setDouble(ki.getDouble(0));
-        kd.setDouble(kd.getDouble(0));
+        kp.setDouble(kp.getDouble(0.588778189545199));
+        ki.setDouble(ki.getDouble(0.336177474402731));
+        kd.setDouble(kd.getDouble(0.136518781502499));
         pid.setPID(kp.getDouble(0), ki.getDouble(0), kd.getDouble(0));
         targetDistance.setDouble(targetDistance.getDouble(0));
         followSpeed.setDouble(followSpeed.getDouble(0));

@@ -107,9 +107,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    if (cManager.usingVision()) {
+    if (cManager.lookAtBall()) {        
       visionSystem.LookAtTarget();
-    } else {
+    } else if (cManager.followBall()){  
+      visionSystem.FollowTarget();
+    } 
+    else {
       dTrain.operatorDrive();
     }
     collector.opRunCollector();

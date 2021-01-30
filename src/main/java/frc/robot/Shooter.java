@@ -19,8 +19,8 @@ public class Shooter {
     private Encoder LShoot = new Encoder(1,2);
     private Encoder RShoot = new Encoder(3,4);
     private Spark arm = new Spark(2);
-    private Victor LeftShoot = new Victor(7);
-    private Victor RightShoot = new Victor(8);
+    private Victor LeftShoot = new Victor(8);
+    private Victor RightShoot = new Victor(9);
     
     private ControllerManager cManager;
 

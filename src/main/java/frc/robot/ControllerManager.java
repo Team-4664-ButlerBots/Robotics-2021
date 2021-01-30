@@ -55,11 +55,16 @@ public class ControllerManager {
         return joystick.getRawAxis(1);      
     }
 
-    public boolean usingVision() {
+    public boolean lookAtBall() {
         return gamepad.getRawButton(8);
+    }
+
+    public boolean followBall(){
+        return gamepad.getRawButton(7);
     }
 
     public double getShootSpeed(){
         return joystick.getRawAxis(2);
     }
+    
 }

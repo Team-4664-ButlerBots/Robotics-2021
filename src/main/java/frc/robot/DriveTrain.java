@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * Add your docs here.
  */
 public class DriveTrain {
-    private Victor m_left = new Victor(1);
-    private Victor m_right = new Victor(0);
+    private Victor m_left = new Victor(6);
+    private Victor m_right = new Victor(7);
     private DifferentialDrive m_drive = new DifferentialDrive(m_left, m_right);
     private ControllerManager cManager;
     
