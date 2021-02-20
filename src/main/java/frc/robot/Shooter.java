@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.controller.*;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,7 +22,8 @@ public class Shooter {
     private Spark arm = new Spark(2);
     private Victor LeftShoot = new Victor(8);
     private Victor RightShoot = new Victor(9);
-    
+    private PIDController LeftPID = new PIDController(0, 0, 0);
+    private PIDController RightPID = new PIDController(0, 0, 0);
     private ControllerManager cManager;
 
     public Shooter(ControllerManager cManager){
@@ -47,8 +49,10 @@ public class Shooter {
     private double L_rpm, R_rpm, TargetRpm;
 
     private void setSpeed(double speed){
-        LeftShoot.setSpeed(speed);
-        RightShoot.setSpeed(-speed);
+        LeftShoot.setSpeed(LeftPID.calculate(LShoot.getRate() , speed*100.0));
+        RightShoot.setSpeed(RightPID.calculate(RShoot.getRate() , speed*100.0));
+        
+        
         /*L_rpm = (LShoot.getRate()/2048.0)/60.0;
         R_rpm = (RShoot.getRate()/2048.0)/60.0;
         // calculate target
@@ -67,6 +71,16 @@ public class Shooter {
             RightShoot.setSpeed(1.0);
         }
         */
+           
 
+    }
+    private double clamp(double in, double low, double high){
+        if(in < low){
+            return low;
+        }else if(in > high){
+            return high;
+        }else{
+            return in;
+        }
     }
 }

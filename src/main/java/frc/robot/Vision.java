@@ -58,7 +58,7 @@ public class Vision {
         if (!noTarget.getBoolean(true)) {
             // set robot to turn to face target from published xPosition from raspberry pi;
             pid.setPID(kp.getDouble(0), ki.getDouble(0), kd.getDouble(0));
-            dTrain.getDiffDrive().arcadeDrive(0, pid.calculate(0, (xCenter.getDouble(0) - 0.5) * 2));
+            dTrain.getDiffDrive().arcadeDrive(0, -pid.calculate((xCenter.getDouble(0) - 0.5) * 2, 0));
         } else {
             dTrain.getDiffDrive().tankDrive(0, 0);
         }
@@ -67,12 +67,22 @@ public class Vision {
     public void FollowTarget() {
         if (!noTarget.getBoolean(true)) {
             double speed = (RectSize.getDouble(0) - targetDistance.getDouble(0)) * followSpeed.getDouble(0);
-
+            speed = clamp(speed, -0.5, 0.5);
             // set robot to turn to face target from published xPosition from raspberry pi;
             pid.setPID(kp.getDouble(0), ki.getDouble(0), kd.getDouble(0));
-            dTrain.getDiffDrive().arcadeDrive(speed * yCenter.getDouble(0), pid.calculate(0, (xCenter.getDouble(0) - 0.5) * 2));
+            dTrain.getDiffDrive().arcadeDrive(speed, -pid.calculate((xCenter.getDouble(0) - 0.5) * 2, 0));
         } else {
             dTrain.getDiffDrive().tankDrive(0, 0);
+        }
+    }
+
+    private double clamp(double in, double low, double high){
+        if(in < low){
+            return low;
+        }else if(in > high){
+            return high;
+        }else{
+            return in;
         }
     }
 
