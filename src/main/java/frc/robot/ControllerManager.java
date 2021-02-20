@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.Joystick;
  */
 public class ControllerManager {
 
-    private Joystick gamepad = new Joystick(0);     
-    private Joystick joystick = new Joystick(1);    
+    private Joystick gamepad = new Joystick(0);
+    private Joystick joystick = new Joystick(1);
     // public Joystick joystick = new Joystick(1);
 
     private boolean speedToggled = false;
@@ -51,20 +51,42 @@ public class ControllerManager {
         }
     }
 
+    /**
+     * returns 1 for trigger held down, 0 for not pressed, and -1 for release period. 
+     * The release period is true for 1 second after release
+     * @return
+     */
+    double time = 0;
+    public int getShootState() {
+        if (joystick.getTrigger()) {
+            return 1;
+        }else if(joystick.getTriggerReleased()){
+            time = System.currentTimeMillis()/1000.0;
+            return -1;
+        }else{
+            //returns the released state for a second after letting go. 
+            if(System.currentTimeMillis()/1000.0 - time < 0.7){
+                return -1;
+            }else{
+                return 0;
+            }
+        }
+    }
+
     public double getArmInput() {
-        return joystick.getRawAxis(1);      
+        return joystick.getRawAxis(1);
     }
 
     public boolean lookAtBall() {
         return gamepad.getRawButton(8);
     }
 
-    public boolean followBall(){
+    public boolean followBall() {
         return gamepad.getRawButton(7);
     }
 
-    public double getShootSpeed(){
+    public double getFlyWheelSpeed() {
         return joystick.getRawAxis(2);
     }
-    
+
 }
