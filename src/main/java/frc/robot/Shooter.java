@@ -20,7 +20,9 @@ public class Shooter {
     private Encoder LShoot = new Encoder(1,2);
     private Encoder RShoot = new Encoder(3,4);
     private Spark arm = new Spark(2);
+    private double leftShootSpeed = 0;
     private Victor LeftShoot = new Victor(8);
+    private double rightShootSpeed = 0;
     private Victor RightShoot = new Victor(9);
     private PIDController LeftPID = new PIDController(0, 0, 0);
     private PIDController RightPID = new PIDController(0, 0, 0);
@@ -32,7 +34,7 @@ public class Shooter {
 
     public void OperatorControl(){
         arm.set(cManager.getArmInput());
-        setSpeed(cManager.getShootSpeed());
+        setFlyWheelSpeed(cManager.getShootSpeed());
     }
 
     public void Debug(){
@@ -45,35 +47,13 @@ public class Shooter {
         SmartDashboard.putNumber("Rotations", LShoot.getDistance()/2048.0);
     }
 
-    
     private double L_rpm, R_rpm, TargetRpm;
 
-    private void setSpeed(double speed){
+    private void setFlyWheelSpeed(double speed){
         LeftShoot.setSpeed(LeftPID.calculate(LShoot.getRate() , speed*100.0));
         RightShoot.setSpeed(RightPID.calculate(RShoot.getRate() , speed*100.0));
-        
-        
-        /*L_rpm = (LShoot.getRate()/2048.0)/60.0;
-        R_rpm = (RShoot.getRate()/2048.0)/60.0;
-        // calculate target
-        TargetRpm = speed;
-        //compare l and r rpm to target
-        if(L_rpm > TargetRpm){
-            LeftShoot.setSpeed(0.0);
-        }else{
-            LeftShoot.setSpeed(1.0);
-        }
-
-        if(R_rpm > TargetRpm){
-            RightShoot.setSpeed(0.0);
-        }
-        else{
-            RightShoot.setSpeed(1.0);
-        }
-        */
-           
-
     }
+
     private double clamp(double in, double low, double high){
         if(in < low){
             return low;
@@ -82,5 +62,23 @@ public class Shooter {
         }else{
             return in;
         }
+    }
+
+    /**
+     * Controls the arm of the robot. The brake should be actuated when the arm is stationary and 
+     * moving down. The brake should be released when the arm is moving up. There should be a 5% deadband
+     * @param speed sets the speed of the motor controlling the arm's up down movement
+     */
+    public void moveArm(double speed){
+        
+    }
+
+    /**
+     * All motors will be set inside this method. A motor speed should never be set outside it
+     * Motors will be set every frame of operation to prevent motor safety timeout. 
+     * variables inside the class will control motor speeds
+     */
+    public void UpdateMotors(){
+
     }
 }

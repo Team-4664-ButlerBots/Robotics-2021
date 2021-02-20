@@ -29,7 +29,6 @@ public class Robot extends TimedRobot {
   LedManager ledManager = new LedManager(cManager);
   DriveTrain dTrain = new DriveTrain(cManager);
   Shooter shooter = new Shooter(cManager);
-  BallCollector collector = new BallCollector(cManager);
   Vision visionSystem = new Vision(dTrain);
 
   /**
@@ -114,7 +113,6 @@ public class Robot extends TimedRobot {
     else {
       dTrain.operatorDrive();
     }
-    collector.opRunCollector();
     shooter.OperatorControl();
 
     ledManager.TeleopUpdate();
