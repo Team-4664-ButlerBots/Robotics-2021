@@ -27,9 +27,9 @@ public class DriveTrain {
     public void operatorDrive(){
         double[] input = cManager.getDriveInput();
         if(cManager.speedToggle())
-            m_drive.tankDrive(input[0]/2, input[1]/2);
+            m_drive.tankDrive(input[1]/2, -input[0]/2);
         else
-            m_drive.tankDrive(input[0], input[1]);
+            m_drive.tankDrive(input[1], -input[0]);
     }
 
     public DifferentialDrive getDiffDrive(){

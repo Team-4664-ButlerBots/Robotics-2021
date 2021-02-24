@@ -31,8 +31,8 @@ public class Shooter {
     private Solenoid Brake = new Solenoid(2);
 
     // fly wheels
-    private Encoder Lencoder = new Encoder(1, 2);
-    private Encoder Rencoder = new Encoder(3, 4);
+    private Encoder Lencoder = new Encoder(3, 4);
+    private Encoder Rencoder = new Encoder(1, 2);
     private PIDController LeftPID = new PIDController(0, 0, 0);
     private PIDController RightPID = new PIDController(0, 0, 0);
     private Victor LeftShootMC = new Victor(8);
@@ -54,6 +54,7 @@ public class Shooter {
         moveArm(cManager.getArmInput());
         collector.moveCollector(cManager.collectorInput());
         Shoot(cManager.getShootState());
+        Debug();
     }
 
     public void Debug() {
@@ -61,16 +62,20 @@ public class Shooter {
     }
 
     void readEncoder() {
-        SmartDashboard.putNumber("LEncodeSpeed", Lencoder.getRate());
+        SmartDashboard.putNumber("LEncodeSpeed", Lencoder.getRate() / 2048.0);
         SmartDashboard.putNumber("LEncodeDistance", Lencoder.getDistance());
         SmartDashboard.putNumber("Rotations", Lencoder.getDistance() / 2048.0);
     }
 
     // directly sets current flywheel speed
     private void setFlyWheelSpeed(double speed) {
-        TargetRpm = speed * 100;
-        LeftShootSpeed = (LeftPID.calculate(Lencoder.getRate(), TargetRpm));
-        RightShootSpeed = (RightPID.calculate(Rencoder.getRate(), TargetRpm));
+        speed += 1.0;
+        speed /= 2.0;
+        TargetRpm = speed * 10;
+        LeftShootSpeed = TargetRpm;
+        RightShootSpeed = TargetRpm;
+        //LeftShootSpeed = (LeftPID.calculate(Lencoder.getRate(), TargetRpm));
+        //RightShootSpeed = (RightPID.calculate(Rencoder.getRate(), TargetRpm));
     }
 
     private double clamp(double in, double low, double high) {
