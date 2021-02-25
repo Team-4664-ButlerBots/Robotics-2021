@@ -15,9 +15,14 @@ import edu.wpi.first.wpilibj.Victor;
 */
 public class BallCollector {
     private Victor CollectorMC = new Victor(3);
-    private DigitalInput collectorSwitch = new DigitalInput(0);
+
+    //switch that is positioned at stopper piston. Pressed when collector will jam
+    LimitSwitch jamSwitch = new LimitSwitch(9);
+    //switch at input, pressed when a new ball is fed into the collector
+    LimitSwitch inputSwitch = new LimitSwitch(8);
+
     //tracks how many balls are currenty in the robot
-    private int currentBallCount;
+    private int currentBallCount = 0;
 
     //manual overide move collector.
     public void moveCollector(double speed){
@@ -33,17 +38,18 @@ public class BallCollector {
             }
         }
 
-        if(collectorSwitch.get()){
+        //if the input switch has just been pressed then 
+        if(inputSwitch.getSwitchDown()){
             currentBallCount++;
         }
         
     }
 
     /**
-     * this is run when a ball is shot, it decrements the ball count by one. 
+     * this is run when a ball is shot, it decrements the ball count by one and handles any other post-shooting code
      */
     public void ballShot(){
-
+        currentBallCount--;
     }
 
     /**
@@ -52,7 +58,7 @@ public class BallCollector {
      * @return
      */
     public boolean ballsWillJam(){
-        return false;
+        return jamSwitch.getSwitchState();
     }
 
 }

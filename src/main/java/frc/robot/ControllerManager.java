@@ -42,9 +42,9 @@ public class ControllerManager {
     }
 
     public double collectorInput() {
-        if (gamepad.getRawButton(2)) {
+        if (joystick.getRawButton(11)) {
             return -Constants.collectorSpeed;
-        } else if (gamepad.getRawButton(1)) {
+        } else if (joystick.getRawButton(10)) {
             return Constants.collectorSpeed;
         } else {
             return 0;
@@ -86,7 +86,19 @@ public class ControllerManager {
     }
 
     public double getFlyWheelSpeed() {
-        return joystick.getRawAxis(2);
+        return (joystick.getRawAxis(2) + 1.0)/2.0;
+    }
+
+    private boolean armed = false;
+    public boolean getArmed(){
+        if(joystick.getRawButtonPressed(3)){
+            armed = !armed;
+        }
+        return armed || joystick.getTrigger();
+    }
+
+    public boolean ShootManualOverride(){
+        return joystick.getRawButton(2);
     }
 
 }

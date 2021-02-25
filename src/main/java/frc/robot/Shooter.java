@@ -13,28 +13,31 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.*;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
 
 /**
  * Add your docs here.
  */
 public class Shooter {
-    private Spark ArmMC = new Spark(2);
+    private Victor ArmMC = new Victor(5);
     private double ArmSpeed = 0.0;
-    BallCollector collector = new BallCollector();
+    private BallCollector collector = new BallCollector();
+    private double collectorSpeed;
 
     // pnematics
     private Compressor Compressor = new Compressor(0);
-    private Solenoid StopPiston = new Solenoid(1);
-    private Solenoid Brake = new Solenoid(2);
+    private DoubleSolenoid StopPiston = new DoubleSolenoid(7, 5);
+    private DoubleSolenoid Brake = new DoubleSolenoid(4, 6);
 
     // fly wheels
-    private Encoder Lencoder = new Encoder(3, 4);
-    private Encoder Rencoder = new Encoder(1, 2);
-    private PIDController LeftPID = new PIDController(0, 0, 0);
-    private PIDController RightPID = new PIDController(0, 0, 0);
+    private Encoder Lencoder = new Encoder(1, 2);
+    private Encoder Rencoder = new Encoder(3, 4);
+    private PIDController LeftPID = new PIDController(0.5, 0.1, 0);
+    private PIDController RightPID = new PIDController(0.5, 0.1, 0);
     private Victor LeftShootMC = new Victor(8);
     private double LeftShootSpeed = 0.0;
     private Victor RightShootMC = new Victor(9);
@@ -42,7 +45,6 @@ public class Shooter {
     // target rpm is the minimum speed that the flywheels must be running at to
     // shoot
     private double TargetRpm = 0;
-
     private ControllerManager cManager;
 
     public Shooter(ControllerManager cManager) {
@@ -50,10 +52,12 @@ public class Shooter {
     }
 
     public void OperatorControl() {
+        Lencoder.setDistancePerPulse(1/2048.0);
+        Rencoder.setDistancePerPulse(1/2048.0);
         setFlyWheelSpeed(cManager.getFlyWheelSpeed());
         moveArm(cManager.getArmInput());
-        collector.moveCollector(cManager.collectorInput());
         Shoot(cManager.getShootState());
+        collectorSpeed = cManager.collectorInput();
         Debug();
     }
 
@@ -62,20 +66,23 @@ public class Shooter {
     }
 
     void readEncoder() {
-        SmartDashboard.putNumber("LEncodeSpeed", Lencoder.getRate() / 2048.0);
+        SmartDashboard.putNumber("LEncodeSpeed", Rencoder.getRate());
         SmartDashboard.putNumber("LEncodeDistance", Lencoder.getDistance());
-        SmartDashboard.putNumber("Rotations", Lencoder.getDistance() / 2048.0);
+        SmartDashboard.putNumber("Rotations", Lencoder.getDistance());
+        SmartDashboard.putBoolean("TARGET SPEED REACHED", false);
     }
 
     // directly sets current flywheel speed
     private void setFlyWheelSpeed(double speed) {
-        speed += 1.0;
-        speed /= 2.0;
-        TargetRpm = speed * 10;
-        LeftShootSpeed = TargetRpm;
-        RightShootSpeed = TargetRpm;
-        //LeftShootSpeed = (LeftPID.calculate(Lencoder.getRate(), TargetRpm));
-        //RightShootSpeed = (RightPID.calculate(Rencoder.getRate(), TargetRpm));
+        if (cManager.getArmed()) {
+            TargetRpm = speed * 100;
+        } else {
+            TargetRpm = speed * 15;
+        }
+        // LeftShootSpeed = TargetRpm;
+        // RightShootSpeed = TargetRpm;
+        //LeftShootSpeed = (clamp(LeftPID.calculate(Lencoder.getRate(), TargetRpm), 0, 1));
+        //RightShootSpeed = (clamp(RightPID.calculate(Rencoder.getRate(), TargetRpm), -1, 0));
     }
 
     private double clamp(double in, double low, double high) {
@@ -98,12 +105,12 @@ public class Shooter {
      *              movement
      */
     public void moveArm(double speed) {
-        if (speed < -0.5) {
-            Brake.set(true);
-        } else if (speed > 0.5) {
-            Brake.set(false);
+        if (speed < -0.05) {
+            Brake.set(Value.kReverse);
+        } else if (speed > 0.2) {
+            Brake.set(Value.kForward);
         } else {
-            Brake.set(true);
+            Brake.set(Value.kReverse);
             speed = 0;
         }
         ArmSpeed = speed;
@@ -112,23 +119,25 @@ public class Shooter {
     public void Shoot(int shootState) {
         switch (shootState) {
             case 1:
-                //System.out.println("Running");
+                // System.out.println("Running");
                 // open piston
-                StopPiston.set(false);
+                StopPiston.set(Value.kReverse);
                 // check if the fly wheels are spinning at the target rpm
-                if (Lencoder.getRate() > TargetRpm - 1 && Rencoder.getRate() > TargetRpm - 1) {
-                    collector.moveCollector(1);
+                boolean TargetRpmReached = Lencoder.getRate() > TargetRpm - 1 && Rencoder.getRate() > TargetRpm - 1;
+                SmartDashboard.putBoolean("TARGET SPEED REACHED", TargetRpmReached);
+                if (TargetRpmReached || cManager.ShootManualOverride()) {
+                    collectorSpeed = 1;
                 } else {
-                    collector.moveCollector(0);
+                    collectorSpeed = 0;
                 }
                 break;
             case 0:
-                //System.out.println("Stopping");
-                StopPiston.set(true);
+                // System.out.println("Stopping");
+                StopPiston.set(Value.kForward);
                 break;
             case -1:
-                //System.out.println("BackingUp");
-                collector.moveCollector(-1);
+                // System.out.println("BackingUp");
+                collectorSpeed = -1;
                 break;
             default:
                 System.out.println("Something is busted if this is running");
@@ -145,5 +154,6 @@ public class Shooter {
         LeftShootMC.setSpeed(LeftShootSpeed);
         RightShootMC.setSpeed(RightShootSpeed);
         ArmMC.setSpeed(ArmSpeed);
+        collector.moveCollector(collectorSpeed);
     }
 }
