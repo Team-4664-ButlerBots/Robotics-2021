@@ -33,18 +33,9 @@ public class Shooter {
     private DoubleSolenoid StopPiston = new DoubleSolenoid(7, 5);
     private DoubleSolenoid Brake = new DoubleSolenoid(4, 6);
 
-    // fly wheels
-    private Encoder Lencoder = new Encoder(1, 2);
-    private Encoder Rencoder = new Encoder(3, 4);
-    private PIDController LeftPID = new PIDController(0.5, 0.1, 0);
-    private PIDController RightPID = new PIDController(0.5, 0.1, 0);
-    private Victor LeftShootMC = new Victor(8);
-    private double LeftShootSpeed = 0.0;
-    private Victor RightShootMC = new Victor(9);
-    private double RightShootSpeed = 0.0;
-    // target rpm is the minimum speed that the flywheels must be running at to
-    // shoot
-    private double TargetRpm = 0;
+    //
+    FlyWheels flyWheels = new FlyWheels();
+
     private ControllerManager cManager;
 
     public Shooter(ControllerManager cManager) {
@@ -52,47 +43,18 @@ public class Shooter {
     }
 
     public void OperatorControl() {
-        Lencoder.setDistancePerPulse(1/2048.0);
-        Rencoder.setDistancePerPulse(1/2048.0);
         setFlyWheelSpeed(cManager.getFlyWheelSpeed());
         moveArm(cManager.getArmInput());
         Shoot(cManager.getShootState());
         collectorSpeed = cManager.collectorInput();
-        Debug();
     }
 
-    public void Debug() {
-        readEncoder();
-    }
 
-    void readEncoder() {
-        SmartDashboard.putNumber("LEncodeSpeed", Rencoder.getRate());
-        SmartDashboard.putNumber("LEncodeDistance", Lencoder.getDistance());
-        SmartDashboard.putNumber("Rotations", Lencoder.getDistance());
-        SmartDashboard.putBoolean("TARGET SPEED REACHED", false);
-    }
 
     // directly sets current flywheel speed
     private void setFlyWheelSpeed(double speed) {
-        if (cManager.getArmed()) {
-            TargetRpm = speed * 100;
-        } else {
-            TargetRpm = speed * 15;
-        }
-        // LeftShootSpeed = TargetRpm;
-        // RightShootSpeed = TargetRpm;
-        //LeftShootSpeed = (clamp(LeftPID.calculate(Lencoder.getRate(), TargetRpm), 0, 1));
-        //RightShootSpeed = (clamp(RightPID.calculate(Rencoder.getRate(), TargetRpm), -1, 0));
-    }
-
-    private double clamp(double in, double low, double high) {
-        if (in < low) {
-            return low;
-        } else if (in > high) {
-            return high;
-        } else {
-            return in;
-        }
+        flyWheels.setSpeed(cManager.getFlyWheelSpeed());
+        flyWheels.setArmed(cManager.getArmed());
     }
 
     /**
@@ -123,9 +85,7 @@ public class Shooter {
                 // open piston
                 StopPiston.set(Value.kReverse);
                 // check if the fly wheels are spinning at the target rpm
-                boolean TargetRpmReached = Lencoder.getRate() > TargetRpm - 1 && Rencoder.getRate() > TargetRpm - 1;
-                SmartDashboard.putBoolean("TARGET SPEED REACHED", TargetRpmReached);
-                if (TargetRpmReached || cManager.ShootManualOverride()) {
+                if (flyWheels.readyToFire() || cManager.ShootManualOverride()) {
                     collectorSpeed = 1;
                 } else {
                     collectorSpeed = 0;
@@ -151,8 +111,7 @@ public class Shooter {
      * safety timeout. variables inside the class will control motor speeds
      */
     public void UpdateMotors() {
-        LeftShootMC.setSpeed(LeftShootSpeed);
-        RightShootMC.setSpeed(RightShootSpeed);
+        flyWheels.updateMotors();
         ArmMC.setSpeed(ArmSpeed);
         collector.moveCollector(collectorSpeed);
     }
