@@ -7,17 +7,10 @@
 
 package frc.robot;
 
-import java.util.stream.Collector;
-
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.controller.*;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Solenoid;
 
 /**
  * Add your docs here.
@@ -49,11 +42,10 @@ public class Shooter {
         collectorSpeed = cManager.collectorInput();
     }
 
-
-
     // directly sets current flywheel speed
     private void setFlyWheelSpeed(double speed) {
-        flyWheels.setSpeed(cManager.getFlyWheelSpeed());
+        speed *= 50;
+        flyWheels.setSpeed(speed);
         flyWheels.setArmed(cManager.getArmed());
     }
 
@@ -111,6 +103,7 @@ public class Shooter {
      * safety timeout. variables inside the class will control motor speeds
      */
     public void UpdateMotors() {
+        flyWheels.Debug();
         flyWheels.updateMotors();
         ArmMC.setSpeed(ArmSpeed);
         collector.moveCollector(collectorSpeed);

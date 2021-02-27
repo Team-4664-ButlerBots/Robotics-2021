@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -19,6 +18,7 @@ public class DriveTrain {
     private Victor m_rightMC = new Victor(7);
     private DifferentialDrive m_drive = new DifferentialDrive(m_leftMC, m_rightMC);
     private ControllerManager cManager;
+    private boolean TargetingMode = false;
     
     public DriveTrain(ControllerManager cManager){
         this.cManager = cManager;

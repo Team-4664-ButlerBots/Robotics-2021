@@ -3,10 +3,11 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+
 import java.util.stream.Collector;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.Spark;
 
 /** This class will handle tracking current state of balls inside Collector
  * it will stop the collector from moving if the balls are bunched up. Legally
@@ -14,7 +15,7 @@ import edu.wpi.first.wpilibj.Victor;
  * pick up more than that. 
 */
 public class BallCollector {
-    private Victor CollectorMC = new Victor(3);
+    private Spark CollectorMC = new Spark(4);
 
     //switch that is positioned at stopper piston. Pressed when collector will jam
     LimitSwitch jamSwitch = new LimitSwitch(9);
@@ -36,6 +37,8 @@ public class BallCollector {
                 //otherwise stop the collector
                 CollectorMC.setSpeed(0);
             }
+        }else{
+            CollectorMC.setSpeed(speed);
         }
 
         //if the input switch has just been pressed then 
@@ -58,7 +61,8 @@ public class BallCollector {
      * @return
      */
     public boolean ballsWillJam(){
-        return jamSwitch.getSwitchState();
+        //return jamSwitch.getSwitchState();
+        return false;
     }
 
 }

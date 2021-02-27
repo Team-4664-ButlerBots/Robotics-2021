@@ -61,7 +61,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     // ultra.publishUltra();
     ledManager.PeriodicUpdate();
-    //shooter.UpdateMotors();
+    shooter.UpdateMotors();
   }
 
   /**
@@ -114,7 +114,6 @@ public class Robot extends TimedRobot {
       dTrain.operatorDrive();
     }
     shooter.OperatorControl();
-
     ledManager.TeleopUpdate();
     shooter.UpdateMotors();
   }

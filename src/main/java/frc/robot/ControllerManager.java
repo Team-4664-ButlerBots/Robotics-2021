@@ -41,6 +41,10 @@ public class ControllerManager {
         return input;
     }
 
+    public double getTargetingDriveInput(){
+        return joystick.getRawAxis(0);
+    }
+
     public double collectorInput() {
         if (joystick.getRawButton(11)) {
             return -Constants.collectorSpeed;

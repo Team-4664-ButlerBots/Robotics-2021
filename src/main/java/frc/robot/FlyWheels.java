@@ -16,13 +16,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * fire
  */
 public class FlyWheels {
-    private double speed;
+    private double speed = 0;
+    //speed after arm
+    private double TargetSpeed = 0;
     private boolean armed;
     private double rpmTolerance = 4;
 
-    // fly wheels
-    private Encoder Lencoder = new Encoder(1, 2);
-    private Encoder Rencoder = new Encoder(3, 4);
+    // fly wheels Right encoder screwing
+    private Encoder Rencoder = new Encoder(1, 2);
+    private Encoder Lencoder = new Encoder(4, 3);
     private Victor LeftShootMC = new Victor(8);
     private Victor RightShootMC = new Victor(9);
 
@@ -49,18 +51,29 @@ public class FlyWheels {
     }
 
     public void updateMotors() {
-        double currentSpeed = 0;
         if (armed) {
-            currentSpeed = speed;
-        }else{
-            currentSpeed = speed / 4;
+            TargetSpeed = speed;
+        } else {
+            TargetSpeed = speed / 4;
         }
 
-        double pMultiplier = 0.2;
+        constantSpeed();
+        //encoderTrack();
+    }
 
-        double leftSpeed = clamp(((currentSpeed - Lencoder.getRate()) * pMultiplier), 0, 1);
+    private void constantSpeed(){
+        TargetSpeed /= 50;
+        LeftShootMC.setSpeed(-TargetSpeed);
+        RightShootMC.setSpeed(TargetSpeed);
+    }
+
+    private void encoderTrack() {
+
+        double pMultiplier = 0.5;
+        SmartDashboard.putNumber("TargetSpeed", TargetSpeed);
+        double leftSpeed = clamp(((TargetSpeed - Lencoder.getRate()) * pMultiplier), 0, 1);
         LeftShootMC.setSpeed(leftSpeed);
-        double rightSpeed = clamp(((currentSpeed - Rencoder.getRate()) * pMultiplier), 0, 1);
+        double rightSpeed = clamp(((TargetSpeed - Rencoder.getRate()) * pMultiplier), 0, 1);
         RightShootMC.setSpeed(rightSpeed);
     }
 
@@ -79,8 +92,7 @@ public class FlyWheels {
     }
 
     void readEncoder() {
-        SmartDashboard.putNumber("LEncodeSpeed", Rencoder.getRate());
+        SmartDashboard.putNumber("REncodeSpeed", Rencoder.getRate());
         SmartDashboard.putNumber("LEncodeDistance", Lencoder.getDistance());
-        SmartDashboard.putNumber("Rotations", Lencoder.getDistance());
     }
 }
