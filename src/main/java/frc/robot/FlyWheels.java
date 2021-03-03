@@ -68,7 +68,6 @@ public class FlyWheels {
     }
 
     private void encoderTrack() {
-
         double pMultiplier = 0.5;
         SmartDashboard.putNumber("TargetSpeed", TargetSpeed);
         double leftSpeed = clamp(((TargetSpeed - Lencoder.getRate()) * pMultiplier), 0, 1);

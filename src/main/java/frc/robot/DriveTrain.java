@@ -19,20 +19,24 @@ public class DriveTrain {
     private DifferentialDrive m_drive = new DifferentialDrive(m_leftMC, m_rightMC);
     private ControllerManager cManager;
     private boolean TargetingMode = false;
-    
-    public DriveTrain(ControllerManager cManager){
+
+    public DriveTrain(ControllerManager cManager) {
         this.cManager = cManager;
     }
 
-    public void operatorDrive(){
-        double[] input = cManager.getDriveInput();
-        if(cManager.speedToggle())
-            m_drive.tankDrive(-input[1]/2, -input[0]/2);
-        else
-            m_drive.tankDrive(-input[1], -input[0]);
+    public void operatorDrive() {
+        if (TargetingMode) {
+            m_drive.arcadeDrive(0, cManager.getTargetingDriveInput());
+        }else{
+            double[] input = cManager.getDriveInput();
+            if (cManager.speedToggle())
+                m_drive.tankDrive(-input[1] / 2, -input[0] / 2);
+            else
+                m_drive.tankDrive(-input[1], -input[0]);
+        }
     }
 
-    public DifferentialDrive getDiffDrive(){
+    public DifferentialDrive getDiffDrive() {
         return m_drive;
     }
 

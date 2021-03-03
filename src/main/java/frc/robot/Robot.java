@@ -104,7 +104,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-
     if (cManager.lookAtBall()) {        
       visionSystem.LookAtTarget();
     } else if (cManager.followBall()){  
@@ -115,7 +114,7 @@ public class Robot extends TimedRobot {
     }
     shooter.OperatorControl();
     ledManager.TeleopUpdate();
-    shooter.UpdateMotors();
+    //shooter.UpdateMotors();
   }
 
   /**
