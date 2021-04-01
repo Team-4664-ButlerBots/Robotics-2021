@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 public class Shooter {
     private Victor ArmMC = new Victor(5);
     private double ArmSpeed = 0.0;
-    private BallCollector collector = new BallCollector();
+    private BallCollector collector;
     private double collectorSpeed;
 
     // pnematics
@@ -31,8 +31,9 @@ public class Shooter {
 
     private ControllerManager cManager;
 
-    public Shooter(ControllerManager cManager) {
+    public Shooter(ControllerManager cManager, BallCollector ballCollector) {
         this.cManager = cManager;
+        this.collector = ballCollector;
     }
 
     public void OperatorControl() {

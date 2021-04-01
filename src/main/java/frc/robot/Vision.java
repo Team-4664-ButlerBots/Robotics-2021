@@ -18,10 +18,10 @@ import edu.wpi.first.wpilibj.controller.*;
  */
 public class Vision {
 
-    private DriveTrain dTrain;
+    protected DriveTrain dTrain;
     private NetworkTableInstance ntist = NetworkTableInstance.getDefault();
     private NetworkTable visionTable;
-    private NetworkTableEntry xCenter, yCenter, RectSize, noTarget, kp, ki, kd, targetDistance, followSpeed;
+    protected NetworkTableEntry xCenter, yCenter, RectSize, noTarget, kp, ki, kd, TargetSize, followSpeed;
     PIDController pid = new PIDController(0, 0, 0);
 
     // interval between calls to track target. This
@@ -34,7 +34,7 @@ public class Vision {
         yCenter = visionTable.getEntry("Yposition");
         RectSize = visionTable.getEntry("Size");
         noTarget = visionTable.getEntry("NoTarget");
-        targetDistance = visionTable.getEntry("TargetDistance");
+        TargetSize = visionTable.getEntry("TargetSize");
         followSpeed = visionTable.getEntry("followSpeed");
 
         // instantiate the values
@@ -47,7 +47,7 @@ public class Vision {
         ki.setDouble(ki.getDouble(0.336177474402731));
         kd.setDouble(kd.getDouble(0.136518781502499));
         pid.setPID(kp.getDouble(0), ki.getDouble(0), kd.getDouble(0));
-        targetDistance.setDouble(targetDistance.getDouble(0));
+        TargetSize.setDouble(TargetSize.getDouble(0));
         followSpeed.setDouble(followSpeed.getDouble(0));
     }
 
@@ -66,14 +66,22 @@ public class Vision {
 
     public void FollowTarget() {
         if (!noTarget.getBoolean(true)) {
-            double speed = (RectSize.getDouble(0) - targetDistance.getDouble(0)) * followSpeed.getDouble(0);
-            speed = clamp(speed, -0.5, 0.5);
+            double speed = (RectSize.getDouble(0) - TargetSize.getDouble(0)) * followSpeed.getDouble(0);
+            speed = -clamp(speed, -0.5, 0.5);
             // set robot to turn to face target from published xPosition from raspberry pi;
             pid.setPID(kp.getDouble(0), ki.getDouble(0), kd.getDouble(0));
             dTrain.getDiffDrive().arcadeDrive(speed, -pid.calculate((xCenter.getDouble(0) - 0.5) * 2, 0));
         } else {
             dTrain.getDiffDrive().tankDrive(0, 0);
         }
+    }
+
+    public boolean TargetExists(){
+        return !noTarget.getBoolean(true);
+    }
+
+    public double getDistance(){
+        return 100/RectSize.getDouble(100);
     }
 
     private double clamp(double in, double low, double high){

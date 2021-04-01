@@ -102,6 +102,10 @@ public class ControllerManager {
     }
 
     public boolean ShootManualOverride(){
+        return joystick.getRawButton(6);
+    }
+
+    public boolean TargetingMode(){
         return joystick.getRawButton(2);
     }
 

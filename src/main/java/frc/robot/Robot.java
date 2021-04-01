@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LED.LedManager;
@@ -28,8 +29,12 @@ public class Robot extends TimedRobot {
   ControllerManager cManager = new ControllerManager();
   LedManager ledManager = new LedManager(cManager);
   DriveTrain dTrain = new DriveTrain(cManager);
-  Shooter shooter = new Shooter(cManager);
+  BallCollector ballCollector = new BallCollector();
+  Ultrasonic collectorUltra = new Ultrasonic(6,5);
+  Shooter shooter = new Shooter(cManager, ballCollector);
   Vision visionSystem = new Vision(dTrain);
+  LimitSwitch frontSwitch = new LimitSwitch(8);
+  VisionAI visionAI = new VisionAI(dTrain, ballCollector, collectorUltra);
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -37,8 +42,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
+    Ultrasonic.setAutomaticMode(true);
     SmartDashboard.putData("Auto choices", m_chooser);
   }
 
@@ -60,8 +67,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     // ultra.publishUltra();
+    SmartDashboard.putNumber("UltraSOnic", collectorUltra.getRangeInches());
     ledManager.PeriodicUpdate();
-    shooter.UpdateMotors();
   }
 
   /**
@@ -78,6 +85,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    visionAI.AIInit();
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
@@ -88,6 +96,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    visionAI.AIGetTarget();
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
@@ -115,6 +124,7 @@ public class Robot extends TimedRobot {
     shooter.OperatorControl();
     ledManager.TeleopUpdate();
     //shooter.UpdateMotors();
+    shooter.UpdateMotors();
   }
 
   /**

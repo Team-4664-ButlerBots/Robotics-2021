@@ -23,7 +23,7 @@ public class FlyWheels {
     private double rpmTolerance = 4;
 
     // fly wheels Right encoder screwing
-    private Encoder Rencoder = new Encoder(1, 2);
+    private Encoder Rencoder = new Encoder(2, 1);
     private Encoder Lencoder = new Encoder(4, 3);
     private Victor LeftShootMC = new Victor(8);
     private Victor RightShootMC = new Victor(9);
@@ -63,7 +63,7 @@ public class FlyWheels {
 
     private void constantSpeed(){
         TargetSpeed /= 50;
-        LeftShootMC.setSpeed(-TargetSpeed);
+        LeftShootMC.setSpeed(-TargetSpeed * 1.4);
         RightShootMC.setSpeed(TargetSpeed);
     }
 

@@ -16,13 +16,12 @@ import edu.wpi.first.wpilibj.Ultrasonic;
  * Add your docs here.
  */
 public class Ultra {
-    private Ultrasonic frontUltra = new Ultrasonic(0, 1);
+    private Ultrasonic frontUltra = new Ultrasonic(5, 6);
     private NetworkTableInstance ntist = NetworkTableInstance.getDefault();
     private NetworkTable ultraTable;
     private NetworkTableEntry FrontDistance;
 
     public Ultra(){
-        frontUltra.setAutomaticMode(true);
         ultraTable = ntist.getTable("UltraSonicSensors");
         FrontDistance = ultraTable.getEntry("FrontUltraDistance");
     }

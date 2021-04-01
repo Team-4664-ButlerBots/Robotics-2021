@@ -16,15 +16,14 @@ import edu.wpi.first.wpilibj.Spark;
 */
 public class BallCollector {
     private Spark CollectorMC = new Spark(4);
-
     //switch that is positioned at stopper piston. Pressed when collector will jam
-    LimitSwitch jamSwitch = new LimitSwitch(9);
+    private LimitSwitch jamSwitch = new LimitSwitch(9);
     //switch at input, pressed when a new ball is fed into the collector
-    LimitSwitch inputSwitch = new LimitSwitch(8);
 
     //tracks how many balls are currenty in the robot
     private int currentBallCount = 0;
 
+    
     //manual overide move collector.
     public void moveCollector(double speed){
         //if we are moving the belt forward
@@ -40,12 +39,11 @@ public class BallCollector {
         }else{
             CollectorMC.setSpeed(speed);
         }
-
-        //if the input switch has just been pressed then 
-        if(inputSwitch.getSwitchDown()){
-            currentBallCount++;
-        }
         
+    }
+
+    public int getBallcount(){
+        return currentBallCount;
     }
 
     /**

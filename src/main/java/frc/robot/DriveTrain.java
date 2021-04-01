@@ -18,14 +18,13 @@ public class DriveTrain {
     private Victor m_rightMC = new Victor(7);
     private DifferentialDrive m_drive = new DifferentialDrive(m_leftMC, m_rightMC);
     private ControllerManager cManager;
-    private boolean TargetingMode = false;
 
     public DriveTrain(ControllerManager cManager) {
         this.cManager = cManager;
     }
 
     public void operatorDrive() {
-        if (TargetingMode) {
+        if (cManager.TargetingMode()) {
             m_drive.arcadeDrive(0, cManager.getTargetingDriveInput());
         }else{
             double[] input = cManager.getDriveInput();
