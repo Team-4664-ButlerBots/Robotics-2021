@@ -76,6 +76,29 @@ public class LedManager {
         UnderBodyLED.mapLookupTable(test2, 30, 60);
     }
 
+    public void AutoUpdate(boolean targetAquired, double xPos, double size){
+        test.setScale(0.35);
+        test2.setScale(0.35);
+        test.SetInterpolationType(InterpolationType.closest);
+        test2.SetInterpolationType(InterpolationType.closest);
+        test.setBrightness(Math.abs(clamp((xPos - 1) * 3, -1, 0)));
+        test2.setBrightness(Math.abs(clamp((xPos + 1) * 3, 0, 1)));
+        if(targetAquired){
+            test.setGrid(Color.kBlack, Color.kGreen);
+            test2.setGrid(Color.kBlack, Color.kGreen);
+        }else{
+            test.setGrid(Color.kBlack, Color.kRed);
+            test2.setGrid(Color.kBlack, Color.kRed);
+        }
+        test.animate(AnimationType.pulse, size * 0.0015);
+        test.animate(AnimationType.addOffset, 0.01);
+        test2.animate(AnimationType.pulse, size * 0.0015);
+        test2.animate(AnimationType.addOffset, 0.01);
+
+        UnderBodyLED.mapLookupTable(test, 0, 30);
+        UnderBodyLED.mapLookupTable(test2, 30, 60);
+    }
+
     public void PeriodicUpdate() {
 
     }
@@ -93,6 +116,10 @@ public class LedManager {
         test2.animate(AnimationType.addOffset, 0.002 * nSpeed.getDouble(1));
         UnderBodyLED.mapLookupTable(test, 30, 59);
         UnderBodyLED.mapLookupTable(test2, 0, 29);
+    }
+
+    private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
     }
 
 }

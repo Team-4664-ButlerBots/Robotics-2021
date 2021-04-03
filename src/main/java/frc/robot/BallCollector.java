@@ -42,6 +42,18 @@ public class BallCollector {
         
     }
 
+    public void resetBallCount(){
+        currentBallCount = 0;
+    }
+
+    public boolean ballsFull(){
+        return currentBallCount > 0;
+    }
+
+    public void ballCollected(){
+        currentBallCount++;
+    }
+
     public int getBallcount(){
         return currentBallCount;
     }

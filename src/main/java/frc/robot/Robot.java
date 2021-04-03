@@ -30,11 +30,12 @@ public class Robot extends TimedRobot {
   LedManager ledManager = new LedManager(cManager);
   DriveTrain dTrain = new DriveTrain(cManager);
   BallCollector ballCollector = new BallCollector();
+  Gyro gyro = new Gyro();
   Ultrasonic collectorUltra = new Ultrasonic(6,5);
   Shooter shooter = new Shooter(cManager, ballCollector);
   Vision visionSystem = new Vision(dTrain);
   LimitSwitch frontSwitch = new LimitSwitch(8);
-  VisionAI visionAI = new VisionAI(dTrain, ballCollector, collectorUltra);
+  VisionAI visionAI = new VisionAI(dTrain, ballCollector, collectorUltra, ledManager, gyro);
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -67,6 +68,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     // ultra.publishUltra();
+    SmartDashboard.putNumber("Gyro", gyro.gyro.getAngle());
     SmartDashboard.putNumber("UltraSOnic", collectorUltra.getRangeInches());
     ledManager.PeriodicUpdate();
   }

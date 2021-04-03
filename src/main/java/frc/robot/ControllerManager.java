@@ -42,7 +42,7 @@ public class ControllerManager {
     }
 
     public double getTargetingDriveInput(){
-        return joystick.getRawAxis(0);
+        return joystick.getRawAxis(0) / 2;
     }
 
     public double collectorInput() {
