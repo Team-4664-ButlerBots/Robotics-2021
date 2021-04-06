@@ -134,6 +134,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    ledManager.TestUpdate();
+    dTrain.operatorJoystickDrive();
+    ledManager.testUpdate2();
   }
+
+
 }

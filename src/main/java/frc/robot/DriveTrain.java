@@ -35,6 +35,12 @@ public class DriveTrain {
         }
     }
 
+    public void operatorJoystickDrive(){
+        double[] input = cManager.getJoystickDriveInput();
+        m_drive.arcadeDrive(-input[0], input[1]);
+        
+    }
+
     public DifferentialDrive getDiffDrive() {
         return m_drive;
     }

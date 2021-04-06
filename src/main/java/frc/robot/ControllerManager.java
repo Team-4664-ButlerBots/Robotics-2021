@@ -109,4 +109,18 @@ public class ControllerManager {
         return joystick.getRawButton(2);
     }
 
+	public double[] getJoystickDriveInput() {
+        double[] input = new double[2];
+        double speedMult = 0.5;
+        if(joystick.getTrigger()){
+            speedMult = 1;
+        }else{
+            speedMult = 0.5;
+        }
+
+        input[0] = joystick.getRawAxis(1) * speedMult;
+        input[1] = joystick.getRawAxis(0) * 0.75;
+        return input;
+	}
+
 }

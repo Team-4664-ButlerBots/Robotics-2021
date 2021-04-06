@@ -118,6 +118,16 @@ public class LedManager {
         UnderBodyLED.mapLookupTable(test2, 0, 29);
     }
 
+    public void testUpdate2() {
+        test.setScale(1);
+        // test.setSolidColor(new Color(1,1,1));
+        test.SetInterpolationType(InterpolationType.linear);
+        test.setGrid(Color.kYellow, Color.kBlack);
+        test.animate(AnimationType.pulse, 0.05);
+        test.animate(AnimationType.addOffset, -0.001);
+        UnderBodyLED.mapLookupTable(test);
+    }
+
     private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
     }

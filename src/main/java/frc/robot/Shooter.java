@@ -62,7 +62,7 @@ public class Shooter {
     public void moveArm(double speed) {
         if (speed < -0.05) {
             Brake.set(Value.kReverse);
-        } else if (speed > 0.2) {
+        } else if (speed > 0.5) {
             Brake.set(Value.kForward);
         } else {
             Brake.set(Value.kReverse);
