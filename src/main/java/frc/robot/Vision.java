@@ -67,7 +67,7 @@ public class Vision {
     public void FollowTarget() {
         if (!noTarget.getBoolean(true)) {
             double speed = (RectSize.getDouble(0) - TargetSize.getDouble(0)) * followSpeed.getDouble(0);
-            speed = -clamp(speed, -0.5, 0.5);
+            speed = -clamp(speed, -0.55, 0.55);
             // set robot to turn to face target from published xPosition from raspberry pi;
             pid.setPID(kp.getDouble(0), ki.getDouble(0), kd.getDouble(0));
             dTrain.getDiffDrive().arcadeDrive(speed, -pid.calculate((xCenter.getDouble(0) - 0.5) * 2, 0));

@@ -90,7 +90,7 @@ public class ControllerManager {
     }
 
     public double getFlyWheelSpeed() {
-        return (joystick.getRawAxis(2) + 1.0)/2.0;
+        return (joystick.getRawAxis(2) + 1.0)/2.4;
     }
 
     private boolean armed = false;

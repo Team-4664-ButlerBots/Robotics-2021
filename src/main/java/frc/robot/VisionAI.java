@@ -13,6 +13,7 @@ public class VisionAI extends Vision {
     private BallCollector collector;
     private LedManager ledManager;
     private Timer time = new Timer();
+    private Timer timeStart = new Timer();
     private boolean collecting = false;
     private boolean targetPresent = false;
     private Ultrasonic CollectorUltra;
@@ -31,30 +32,37 @@ public class VisionAI extends Vision {
         lastX = xCenter.getDouble(0);
         collector.resetBallCount();
         gyro.init();
+        time.reset();
+        timeStart.reset();
+        timeStart.start();
         targetPresent = false;
     }
 
     public void AIGetTarget() {
-        // System.out.println("Timer Is: " + time.get());
-        ledManager.AutoUpdate(TargetExists(), xCenter.getDouble(0.5), RectSize.getDouble(0));
-        if (collector.ballsFull()) {
-            goToGyro();
+        if (timeStart.get() < 1.5) {
+            dTrain.getDiffDrive().arcadeDrive(0.4, 0);
         } else {
-            if (collecting) {
-                Collect();
+            // System.out.println("Timer Is: " + time.get());
+            ledManager.AutoUpdate(TargetExists(), xCenter.getDouble(0.5), RectSize.getDouble(0));
+            if (collector.ballsFull()) {
+                goToGyro();
             } else {
-                // if a target is on camera
-                if (TargetExists()) {
-                    // follow it
-                    FollowTarget();
-                    // if we are close enough to the target
-                    if (readyToSucc()) {
-                        // try to collect the target
-                        startCollecting();
-                    }
+                if (collecting) {
+                    Collect();
                 } else {
-                    // if no target is found spin in place
-                    dTrain.getDiffDrive().arcadeDrive(0, 0.4);
+                    // if a target is on camera
+                    if (TargetExists()) {
+                        // follow it
+                        FollowTarget();
+                        // if we are close enough to the target
+                        if (readyToSucc()) {
+                            // try to collect the target
+                            startCollecting();
+                        }
+                    } else {
+                        // if no target is found spin in place
+                        dTrain.getDiffDrive().arcadeDrive(0, 0.5);
+                    }
                 }
             }
         }
@@ -83,12 +91,15 @@ public class VisionAI extends Vision {
     }
 
     private void Collect() {
-        if (time.get() > 3.5) {
+        if (time.get() > 4.5) {
             collecting = false;
             targetPresent = false;
             collector.ballCollected();
-            dTrain.getDiffDrive().arcadeDrive(0, 0);
             collector.moveCollector(0);
+            dTrain.getDiffDrive().arcadeDrive(0, 0);
+        } else if (time.get() > 3.5) {
+            collector.moveCollector(0);
+            dTrain.getDiffDrive().arcadeDrive(-0.6, 0);
         } else {
             dTrain.getDiffDrive().arcadeDrive(0.3, 0);
             collector.moveCollector(-1);
@@ -98,7 +109,19 @@ public class VisionAI extends Vision {
     private void goToGyro() {
         // set robot to turn to face target from published xPosition from raspberry pi;
         pid.setPID(kp.getDouble(0), ki.getDouble(0), kd.getDouble(0));
-        dTrain.getDiffDrive().arcadeDrive(0, -clamp(pid.calculate(gyro.gyro.getAngle() / 360, gyro.initalAngle/360), -0.5, 0.5));
+        double currentAngle = gyro.gyro.getAngle() % 360;
+        double initAngle = gyro.initalAngle % 360;
+        System.out.println("Current angle: " + currentAngle + "\t Init Angle: " + initAngle);
+        // dTrain.getDiffDrive().arcadeDrive(0, -clamp(pid.calculate(currentAngle,
+        // initAngle), -0.5, 0.5));
+        double speed = 0;
+        if (Math.abs(currentAngle - initAngle) < 15) {
+            speed = 0.7;
+        } else {
+            speed = 0;
+        }
+        dTrain.getDiffDrive().arcadeDrive(speed, -clamp((currentAngle - initAngle), -0.7, 0.7));
+
     }
 
     private double clamp(double value, double min, double max) {

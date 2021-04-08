@@ -47,7 +47,7 @@ public class BallCollector {
     }
 
     public boolean ballsFull(){
-        return currentBallCount > 0;
+        return currentBallCount > 2;
     }
 
     public void ballCollected(){
