@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.stream.Collector;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Spark;
 

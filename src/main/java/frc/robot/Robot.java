@@ -26,15 +26,31 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  /*
+   * These classes can for the most part be put into two categories. Modules and
+   * drivers. Modules are resources used by drivers, they are anything that
+   * declare roboRio IO ports. For an example an ultrasonic sensor would be a
+   * module because it requires the use of Digital IO ports on the rio. This is
+   * important because you cannont have an IO port used by multiple resources.
+   * What we need to do then is declare a module once and share it with any
+   * drivers that wish to use it. For example Drive train is a module shared with
+   * every class that controls the robots drive wheels.
+   * 
+   * Of course there are a few exeptions to the module driver approach in this
+   * codebase but for the most part it is a helpful way to understand how it's
+   * organized.
+   */
+  // Modules:
   ControllerManager cManager = new ControllerManager();
   LedManager ledManager = new LedManager(cManager);
   DriveTrain dTrain = new DriveTrain(cManager);
   BallCollector ballCollector = new BallCollector();
   Gyro gyro = new Gyro();
-  Ultrasonic collectorUltra = new Ultrasonic(6,5);
+  Ultrasonic collectorUltra = new Ultrasonic(6, 5);
+  LimitSwitch frontSwitch = new LimitSwitch(8);
+  // Drivers:
   Shooter shooter = new Shooter(cManager, ballCollector);
   Vision visionSystem = new Vision(dTrain);
-  LimitSwitch frontSwitch = new LimitSwitch(8);
   VisionAI visionAI = new VisionAI(dTrain, ballCollector, collectorUltra, ledManager, gyro);
 
   /**
@@ -43,7 +59,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     Ultrasonic.setAutomaticMode(true);
@@ -52,6 +67,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+    // LED manager contains update methods that will animate leds in a certain
+    // fasion when called in a loop. When this one is called in a loop it animates a
+    // pulsing puple and red grid that translates forwards. 
     ledManager.DisabledUpdate();
   }
 
@@ -115,17 +133,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    if (cManager.lookAtBall()) {        
+    if (cManager.lookAtBall()) {
       visionSystem.LookAtTarget();
-    } else if (cManager.followBall()){  
+    } else if (cManager.followBall()) {
       visionSystem.FollowTarget();
-    } 
-    else {
+    } else {
       dTrain.operatorDrive();
     }
     shooter.OperatorControl();
     ledManager.TeleopUpdate();
-    //shooter.UpdateMotors();
+    // shooter.UpdateMotors();
     shooter.UpdateMotors();
   }
 
@@ -137,6 +154,5 @@ public class Robot extends TimedRobot {
     dTrain.operatorJoystickDrive();
     ledManager.testUpdate2();
   }
-
 
 }

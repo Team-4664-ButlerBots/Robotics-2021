@@ -14,11 +14,13 @@ import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.controller.*;
 
 /**
- * Add your docs here.
+ * This class handles the vision data computed on the raspberry pi. It pulls target position data from the
+ * network and moves the wheels on the robot to aim at and drive to a target.  
  */
 public class Vision {
-
+    //drive train module
     protected DriveTrain dTrain;
+    //the network table instance that all of our tables are stored in. 
     private NetworkTableInstance ntist = NetworkTableInstance.getDefault();
     private NetworkTable visionTable;
     protected NetworkTableEntry xCenter, yCenter, RectSize, noTarget, kp, ki, kd, TargetSize, followSpeed;
@@ -76,20 +78,20 @@ public class Vision {
         }
     }
 
-    public boolean TargetExists(){
+    public boolean TargetExists() {
         return !noTarget.getBoolean(true);
     }
 
-    public double getDistance(){
-        return 100/RectSize.getDouble(100);
+    public double getDistance() {
+        return 100 / RectSize.getDouble(100);
     }
 
-    private double clamp(double in, double low, double high){
-        if(in < low){
+    private double clamp(double in, double low, double high) {
+        if (in < low) {
             return low;
-        }else if(in > high){
+        } else if (in > high) {
             return high;
-        }else{
+        } else {
             return in;
         }
     }
